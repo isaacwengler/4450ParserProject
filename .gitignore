@@ -1,0 +1,3 @@
+# ignore generated code
+SimplePython*
+!SimplePython.g4
