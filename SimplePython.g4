@@ -1,3 +1,5 @@
 grammar SimplePython;
-prog: expression EOF;
+
+startRule: expression EOF;
+
 expression: 'hello';
