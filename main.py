@@ -4,7 +4,10 @@ from SimplePythonLexer import SimplePythonLexer
 from SimplePythonParser import SimplePythonParser
  
 def main(argv):
-    input_stream = FileStream(argv[1])
+    if len(sys.argv) > 1:
+        input_stream = FileStream(argv[1])
+    else:
+        input_stream = InputStream(sys.stdin.readline())
     lexer = SimplePythonLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = SimplePythonParser(stream)

@@ -15,3 +15,4 @@ Ethan Loftis, Isaac Ernst, Isaac Wengler, Kenny Fatoki, Stephen Bowen
 3. Run `antlr4 -Dlanguage=Python3 SimplePython.g4` in this directory
 4. Put the code to parse in `test_file.py`
 5. Run with `python3 main.py test_file.py`
+    - Alternatively, test via command line by running `python3 main.py` and using stdin
