@@ -12,6 +12,7 @@ def main(argv):
     stream = CommonTokenStream(lexer)
     parser = SimplePythonParser(stream)
     tree = parser.startRule()
+    print(tree.toStringTree(recog=parser))
  
 if __name__ == '__main__':
     main(sys.argv)
