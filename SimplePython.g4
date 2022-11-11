@@ -2,4 +2,4 @@ grammar SimplePython;
 
 startRule: expression EOF;
 
-expression: 'hello';
+expression: 'hello\n';

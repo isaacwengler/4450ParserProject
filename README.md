@@ -10,9 +10,12 @@ Ethan Loftis, Isaac Ernst, Isaac Wengler, Kenny Fatoki, Stephen Bowen
 
 ## How to run
 
-1. Have Python 3.10.7
-2. Follow intructions for python antlr install [here](https://umsystem.instructure.com/courses/113343/files/14509890?module_item_id=5418931)
-3. Run `antlr4 -Dlanguage=Python3 SimplePython.g4` in this directory
-4. Put the code to parse in `test_file.py`
-5. Run with `python3 main.py test_file.py`
-    - Alternatively, test via command line by running `python3 main.py` and using stdin
+1. Have java 19.0.1
+2. Follow intructions for antlr4 install [here](https://umsystem.instructure.com/courses/113343/files/14509890?module_item_id=5418931)
+3. Run `antlr4 SimplePython.g4` in this directory
+4. Run `javac *.java` to compile into java class files
+5. To parse
+    - And print tree on stdout, run: `grun SimplePython startRule -tree <file>`
+    - And visualize in a gui, run: `grun SimplePython startRule -gui <file>`
+        - Replace `<file>` with the `test_file.py` or alternative to parse a file
+        - Omit `<file>` to input on stdin, and enter `control + D` to end the input
