@@ -2,7 +2,15 @@ grammar SimplePython;
 
 startRule: expression EOF;
 
-expression: VAR SPACE arithmatic NEWLINE;
+statement: ((assignment | expression) NEWLINE)*;
+
+assignment: VAR SPACES? ASSIGNMENT_OP SPACES? expression;
+
+expression:
+	expression SPACES? ARITHMETIC_OP SPACES? expression
+	| VAR
+	| NUMBER
+	| STRING;
 
 /*
  * TOKENS DEFINED HERE
@@ -14,7 +22,7 @@ VAR: [A-Za-z_] [A-Za-z0-9_]*;
 // Windows uses \r\n for newline
 NEWLINE: '\n' | '\r\n';
 
-SPACE: ' ';
+SPACE: [ ];
 
 SPACES: SPACE+;
 
@@ -25,13 +33,6 @@ ASCII: [ -~];
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 
 ASSIGNMENT_OP: ARITHMETIC_OP? '=';
-
-arithmatic: (NUMBER | VAR) SPACES? ARITHMETIC_OP SPACES? (
-		NUMBER
-		| VAR
-	);
-
-assignment: VAR SPACES? ASSIGNMENT_OP SPACES? (VAR | NUMBER);
 
 NUMBER: ('0' .. '9')+ ('.' ('0' .. '9')+)?;
 
