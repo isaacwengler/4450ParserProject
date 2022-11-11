@@ -36,3 +36,33 @@ ASSIGNMENT_OP: ARITHMETIC_OP? '=';
 
 NUMBER: ('0' .. '9')+ ('.' ('0' .. '9')+)?;
 
+IF: 'if';
+
+ELSE: 'else';
+
+OBRACE: '{';
+
+CBRASE: '}';
+
+OPAR: '(';
+
+CPAR: ')';
+
+GT: '>';
+
+LT: '<';
+
+GTEQ: '>=';
+
+LTEQ: '<=';
+
+EQ: '==';
+
+NEQ: '!=';
+
+AND: '&&';
+
+OR: '||';
+
+NOT: '!';
+
