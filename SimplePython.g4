@@ -4,7 +4,7 @@ startRule: statement EOF;
 
 statement: ((assignment | expression) NEWLINE)*;
 
-assignment: VAR SPACE* arith SPACE* expression;
+assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression;
 
 expression:
 	expression SPACE* ARITHMETIC_OP SPACE* expression
@@ -34,17 +34,17 @@ FALSE: 'False';
 
 BOOL: TRUE | FALSE;
 
-number: INT | FLOAT;
+NUMBER: INT | FLOAT;
 
 INT: '0' | [1-9][0-9]*;
 
 FLOAT: INT '.' [0-9]+;
 
-primative: BOOL | number | STRING;
+primative: BOOL | NUMBER | STRING;
 
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 
-arith: ARITHMETIC_OP? '=' | '=';
+ASSIGNMENT_OP: ARITHMETIC_OP? '=';
 
 IF: 'if';
 
