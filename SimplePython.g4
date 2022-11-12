@@ -1,16 +1,16 @@
 grammar SimplePython;
 
-startRule: expression EOF;
+startRule: statement EOF;
 
 statement: ((assignment | expression) NEWLINE)*;
 
-assignment: VAR SPACES? ASSIGNMENT_OP SPACES? expression;
+assignment: VAR SPACE* arith SPACE* expression;
 
 expression:
-	expression SPACES? ARITHMETIC_OP SPACES? expression
+	expression SPACE* ARITHMETIC_OP SPACE* expression
 	| VAR
-	| NUMBER
-	| STRING;
+	| primative
+	| OPAR SPACE* expression SPACE* CPAR;
 
 /*
  * TOKENS DEFINED HERE
@@ -22,27 +22,33 @@ VAR: [A-Za-z_] [A-Za-z0-9_]*;
 // Windows uses \r\n for newline
 NEWLINE: '\n' | '\r\n';
 
-SPACE: [ ];
+SPACE: ' ';
 
-SPACES: SPACE+;
+STRING:
+	'\'' ('\\\'' | '\\' | ~('\'' | '\\' | '\n' | '\r'))*? '\''
+	| '"' ('\\"' | '\\' | ~('\'' | '\\' | '\n' | '\r'))*? '"';
 
-STRING: '\'' ASCII '\'' | '"' ASCII '"';
+TRUE: 'True';
 
-ASCII: [ -~];
+FALSE: 'False';
+
+BOOL: TRUE | FALSE;
+
+number: INT | FLOAT;
+
+INT: '0' | [1-9][0-9]*;
+
+FLOAT: INT '.' [0-9]+;
+
+primative: BOOL | number | STRING;
 
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 
-ASSIGNMENT_OP: ARITHMETIC_OP? '=';
-
-NUMBER: ('0' .. '9')+ ('.' ('0' .. '9')+)?;
+arith: ARITHMETIC_OP? '=' | '=';
 
 IF: 'if';
 
 ELSE: 'else';
-
-OBRACE: '{';
-
-CBRASE: '}';
 
 OPAR: '(';
 
@@ -60,9 +66,9 @@ EQ: '==';
 
 NEQ: '!=';
 
-AND: '&&';
+AND: 'and';
 
-OR: '||';
+OR: 'or';
 
-NOT: '!';
+NOT: 'not';
 
