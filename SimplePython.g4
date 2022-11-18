@@ -3,7 +3,8 @@ grammar SimplePython;
 startRule: statement EOF;
 
 statement
-: ((assignment | expression) NEWLINE)*
+: assignment
+| if_statement
 ;
 
 assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression;
@@ -14,6 +15,10 @@ expression
 	| VAR
 	| primative
 	| OPAR SPACE* expression SPACE* CPAR
+	| expression op=(LTEQ | GTEQ | LT | GT) expression
+	| expression op=(EQ | NEQ) expression
+	| expression AND expression
+	| expression OR expression
 ;
 
 parse: block EOF;
