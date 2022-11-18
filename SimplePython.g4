@@ -15,6 +15,7 @@ expression
 	| VAR
 	| primative
 	| OPAR SPACE* expression SPACE* CPAR
+	| NOT expression
 	| expression op=(LTEQ | GTEQ | LT | GT) expression
 	| expression op=(EQ | NEQ) expression
 	| expression AND expression
