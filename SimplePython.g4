@@ -12,6 +12,24 @@ expression:
 	| primative
 	| OPAR SPACE* expression SPACE* CPAR;
 
+
+parse: block EOF;
+
+block: statement*;
+
+if_statement
+ : IF condition_block (ELSE IF condition_block)* (ELSE statement_block)?
+ ;
+
+condition_block
+ : expression COLON statement_block
+ ;
+
+statement_block
+ : OTAB block
+ | statement
+ ;
+
 /*
  * TOKENS DEFINED HERE
  */
@@ -54,6 +72,10 @@ OPAR: '(';
 
 CPAR: ')';
 
+OTAB: '	';
+
+COLON: ':';
+
 GT: '>';
 
 LT: '<';
@@ -71,4 +93,3 @@ AND: 'and';
 OR: 'or';
 
 NOT: 'not';
-
