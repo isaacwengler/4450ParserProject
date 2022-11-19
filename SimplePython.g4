@@ -13,9 +13,19 @@ expression
 	expression SPACE* (ARITHMETIC_OP | LOGIC_OP) SPACE* expression
 	| primative
 	| VAR
+	| list
+	| tuple
 	| OPAR SPACE* expression SPACE* CPAR
 	| NOT SPACE* expression
 	| expression SPACE* CONDITIONAL_OP SPACE* expression
+;
+
+list
+: '[' (SPACE* expression SPACE* COMMA)* (SPACE* expression SPACE*)? ']'
+;
+
+tuple
+: '(' (SPACE* expression SPACE* COMMA)* (SPACE* expression SPACE*)? ')'
 ;
 
 if_statement
@@ -44,7 +54,8 @@ BOOL: 'True' | 'False';
 NUMBER: INT | FLOAT;
 INT: '0' | [1-9][0-9]*;
 FLOAT: INT '.' [0-9]+;
-primative: BOOL | NUMBER | STRING;
+NONE: 'None';
+primative: BOOL | NUMBER | STRING | NONE;
 
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 ASSIGNMENT_OP: ARITHMETIC_OP? '=';
@@ -53,11 +64,13 @@ LOGIC_OP: 'and' | 'or';
 NOT: 'not';
 OPAR: '(';
 CPAR: ')';
+OBRA: '[';
+CBRA: ']';
+COMMA: ',';
 
 IF: 'if';
 ELIF: 'elif';
 ELSE: 'else';
-
 COLON: ':';
 
 // this has to be under other identifiers so they can take effect 
