@@ -1,64 +1,46 @@
 grammar SimplePython;
 
-startRule: statement EOF;
+startRule: block EOF;
 
-statement
-: assignment
-| if_statement
+block
+: (whitespace* (if_statement|assignment|NEWLINE))+
 ;
 
-assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression;
+assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression NEWLINE;
 
 expression
 :
-	expression SPACE* ARITHMETIC_OP SPACE* expression
-	| VAR
+	expression SPACE* (ARITHMETIC_OP | LOGIC_OP) SPACE* expression
 	| primative
+	| VAR
 	| OPAR SPACE* expression SPACE* CPAR
-	| NOT expression
-	| expression op=(LTEQ | GTEQ | LT | GT) expression
-	| expression op=(EQ | NEQ) expression
-	| expression AND expression
-	| expression OR expression
+	| NOT SPACE* expression
+	| expression SPACE* CONDITIONAL_OP SPACE* expression
 ;
 
-parse: block EOF;
-
-block: statement*;
-
 if_statement
- : IF condition_block (ELSE IF condition_block)* (ELSE statement_block)?
+ : IF SPACE* condition_block (ELIF SPACE* condition_block)* (ELSE COLON NEWLINE block)?
  ;
 
 condition_block
- : expression COLON statement_block
- ;
-
-statement_block
- : OTAB block
- | statement
+ : expression SPACE* COLON NEWLINE block 
  ;
 
 /*
  * TOKENS DEFINED HERE
  */
 
-// Variable starts with letter or underscore with n letters, numbers, and underscores after
-VAR: [A-Za-z_] [A-Za-z0-9_]*;
-
 // Windows uses \r\n for newline
 NEWLINE: '\n' | '\r\n';
-
 SPACE: ' ';
+whitespace: SPACE | '\t';
+
 
 STRING:
 	'\'' ('\\\'' | '\\' | ~('\'' | '\\' | '\n' | '\r'))*? '\''
 	| '"' ('\\"' | '\\' | ~('\'' | '\\' | '\n' | '\r'))*? '"';
 
-TRUE: 'True';
-FALSE: 'False';
-BOOL: TRUE | FALSE;
-
+BOOL: 'True' | 'False';
 NUMBER: INT | FLOAT;
 INT: '0' | [1-9][0-9]*;
 FLOAT: INT '.' [0-9]+;
@@ -66,21 +48,18 @@ primative: BOOL | NUMBER | STRING;
 
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 ASSIGNMENT_OP: ARITHMETIC_OP? '=';
-
-IF: 'if';
-ELSE: 'else';
-
+CONDITIONAL_OP: '>' | '<' | '>=' | '<=' | '==' | '!=';
+LOGIC_OP: 'and' | 'or';
+NOT: 'not';
 OPAR: '(';
 CPAR: ')';
-OTAB: '	';
+
+IF: 'if';
+ELIF: 'elif';
+ELSE: 'else';
+
 COLON: ':';
 
-GT: '>';
-LT: '<';
-GTEQ: '>=';
-LTEQ: '<=';
-EQ: '==';
-NEQ: '!=';
-AND: 'and';
-OR: 'or';
-NOT: 'not';
+// this has to be under other identifiers so they can take effect 
+// Variable starts with letter or underscore with n letters, numbers, and underscores after
+VAR: [A-Za-z_] [A-Za-z0-9_]*;
