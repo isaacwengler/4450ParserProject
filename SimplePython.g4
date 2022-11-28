@@ -3,7 +3,7 @@ grammar SimplePython;
 startRule: block EOF;
 
 block
-: (whitespace* (if_statement|assignment|NEWLINE))+
+: (OPENTAB* (if_statement|assignment|NEWLINE))+
 ;
 
 assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression NEWLINE;
@@ -29,12 +29,14 @@ tuple
 ;
 
 if_statement
- : IF SPACE* condition_block (whitespace* ELIF SPACE* condition_block)* (whitespace* ELSE SPACE* COLON SPACE* NEWLINE block)?
+ : IF SPACE* condition_block (OPENTAB* ELIF SPACE* condition_block)* (OPENTAB* ELSE SPACE* COLON SPACE* NEWLINE block)?
  ;
 
 condition_block
  : expression SPACE* COLON SPACE* NEWLINE block 
  ;
+
+primitive: BOOL | NUMBER | STRING | NONE;
 
 /*
  * TOKENS DEFINED HERE
@@ -44,7 +46,7 @@ condition_block
 NEWLINE: '\n' | '\r\n';
 SPACE: ' ';
 // whitespace to start a line can be tabs or 4 spaces
-whitespace: '    ' | '\t';
+OPENTAB: '    ' | '\t';
 
 
 STRING:
@@ -56,7 +58,6 @@ NUMBER: INT | FLOAT;
 INT: '0' | [1-9][0-9]*;
 FLOAT: INT '.' [0-9]+;
 NONE: 'None';
-primitive: BOOL | NUMBER | STRING | NONE;
 
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 ASSIGNMENT_OP: ARITHMETIC_OP? '=';
