@@ -11,7 +11,7 @@ assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression NEWLINE;
 expression
 :
 	expression SPACE* (ARITHMETIC_OP | LOGIC_OP) SPACE* expression
-	| primative
+	| primitive
 	| VAR
 	| list
 	| tuple
@@ -29,11 +29,11 @@ tuple
 ;
 
 if_statement
- : IF SPACE* condition_block (ELIF SPACE* condition_block)* (ELSE COLON NEWLINE block)?
+ : IF SPACE* condition_block (whitespace* ELIF SPACE* condition_block)* (whitespace* ELSE SPACE* COLON SPACE* NEWLINE block)?
  ;
 
 condition_block
- : expression SPACE* COLON NEWLINE block 
+ : expression SPACE* COLON SPACE* NEWLINE block 
  ;
 
 /*
@@ -43,7 +43,8 @@ condition_block
 // Windows uses \r\n for newline
 NEWLINE: '\n' | '\r\n';
 SPACE: ' ';
-whitespace: SPACE | '\t';
+// whitespace to start a line can be tabs or 4 spaces
+whitespace: '    ' | '\t';
 
 
 STRING:
@@ -55,7 +56,7 @@ NUMBER: INT | FLOAT;
 INT: '0' | [1-9][0-9]*;
 FLOAT: INT '.' [0-9]+;
 NONE: 'None';
-primative: BOOL | NUMBER | STRING | NONE;
+primitive: BOOL | NUMBER | STRING | NONE;
 
 ARITHMETIC_OP: '+' | '-' | '*' | '/' | '%' | '//' | '**';
 ASSIGNMENT_OP: ARITHMETIC_OP? '=';
