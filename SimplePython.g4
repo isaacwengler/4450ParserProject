@@ -37,13 +37,14 @@ assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression SPACE* NEWLINE;
 
 expression
 :
-	expression SPACE* (ARITHMETIC_OP | LOGIC_OP) SPACE* expression
+	expression SPACE* ARITHMETIC_OP SPACE* expression
+	| expression SPACE+ LOGIC_OP SPACE+ expression
 	| primitive
 	| VAR
 	| list
 	| tuple
 	| OPAR SPACE* expression SPACE* CPAR
-	| NOT SPACE* expression
+	| NOT SPACE+ expression
 	| expression SPACE* CONDITIONAL_OP SPACE* expression
 ;
 
@@ -56,7 +57,7 @@ tuple
 ;
 
 if_statement
- : IF SPACE* condition_block (ELIF SPACE* condition_block)* ( ELSE SPACE* COLON SPACE* indentedBlock)?
+ : IF SPACE+ condition_block (ELIF SPACE+ condition_block)* ( ELSE SPACE* COLON SPACE* indentedBlock)?
  ;
 
 condition_block
