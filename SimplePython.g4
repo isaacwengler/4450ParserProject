@@ -1,12 +1,39 @@
 grammar SimplePython;
 
+tokens { INDENT, UNINDENT }
+
+@lexer::header {
+  import com.yuvalshavit.antlr4.DenterHelper;
+}
+
+@lexer::members {
+  private final DenterHelper denter = new DenterHelper(NEWLINE,
+                                                       SimplePythonParser.INDENT,
+                                                       SimplePythonParser.UNINDENT)
+  {
+    @Override
+    public Token pullToken() {
+      return SimplePythonLexer.super.nextToken();
+    }
+  };
+
+  @Override
+  public Token nextToken() {
+    return denter.nextToken();
+  }
+}
+
 startRule: block EOF;
 
 block
-: (OPENTAB* (if_statement|assignment|NEWLINE))+
+: (if_statement|assignment)+
 ;
 
-assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression NEWLINE;
+indentedBlock
+ : INDENT block UNINDENT
+;
+
+assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression SPACE* NEWLINE;
 
 expression
 :
@@ -29,11 +56,11 @@ tuple
 ;
 
 if_statement
- : IF SPACE* condition_block (OPENTAB* ELIF SPACE* condition_block)* (OPENTAB* ELSE SPACE* COLON SPACE* NEWLINE block)?
+ : IF SPACE* condition_block (ELIF SPACE* condition_block)* ( ELSE SPACE* COLON SPACE* indentedBlock)?
  ;
 
 condition_block
- : expression SPACE* COLON SPACE* NEWLINE block 
+ : expression SPACE* COLON SPACE* indentedBlock 
  ;
 
 primitive: BOOL | NUMBER | STRING | NONE;
@@ -43,7 +70,7 @@ primitive: BOOL | NUMBER | STRING | NONE;
  */
 
 // Windows uses \r\n for newline
-NEWLINE: '\n' | '\r\n';
+NEWLINE: (' '* '\r'? '\n' ' '*);
 SPACE: ' ';
 // whitespace to start a line can be tabs or 4 spaces
 OPENTAB: '    ' | '\t';

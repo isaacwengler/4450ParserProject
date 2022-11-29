@@ -1,3 +1,4 @@
 # ignore generated code
 SimplePython*
 !SimplePython.g4
+.DS_Store
