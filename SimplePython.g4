@@ -26,14 +26,24 @@ tokens { INDENT, UNINDENT }
 startRule: block EOF;
 
 block
-: (if_statement|assignment)+
+: (if_statement | assignment | for_loop | while_loop | comment_line)+
 ;
+
+blockInLoop
+: (if_statement_in_loop | assignment | for_loop | while_loop | break_statment | continue_statement | comment_line)+
+;
+
+comment_line: COMMENT NEWLINE;
 
 indentedBlock
  : INDENT block UNINDENT
 ;
 
-assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression SPACE* NEWLINE;
+indentedBlockInLoop
+ : INDENT blockInLoop UNINDENT
+;
+
+assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression SPACE* COMMENT? NEWLINE;
 
 expression
 :
@@ -56,12 +66,41 @@ tuple
 : '(' (SPACE* expression SPACE* COMMA)* (SPACE* expression SPACE*)? ')'
 ;
 
+// TODO: add function (because return value)
+iterable
+: list | tuple | STRING | VAR
+;
+
 if_statement
- : IF SPACE+ condition_block (ELIF SPACE+ condition_block)* ( ELSE SPACE* COLON SPACE* indentedBlock)?
+ : IF SPACE+ condition_block (ELIF SPACE+ condition_block)* ( ELSE SPACE* COLON SPACE* COMMENT? indentedBlock)?
+ ;
+
+if_statement_in_loop
+ : IF SPACE+ condition_block_in_loop (ELIF SPACE+ condition_block_in_loop)* ( ELSE SPACE* COLON SPACE* COMMENT? indentedBlockInLoop)?
+ ;
+
+while_loop
+ : WHILE SPACE+ condition_block_in_loop
+ ;
+
+for_loop
+ : FOR SPACE+ VAR SPACE+ IN SPACE+ iterable SPACE* COLON SPACE* COMMENT? indentedBlockInLoop
  ;
 
 condition_block
- : expression SPACE* COLON SPACE* indentedBlock 
+ : expression SPACE* COLON SPACE* COMMENT? indentedBlock 
+ ;
+
+condition_block_in_loop
+ : expression SPACE* COLON SPACE* COMMENT? indentedBlockInLoop 
+ ;
+
+break_statment
+ : BREAK SPACE* COMMENT? NEWLINE
+ ;
+
+continue_statement
+ : CONTINUE SPACE* COMMENT? NEWLINE
  ;
 
 primitive: BOOL | NUMBER | STRING | NONE;
@@ -76,6 +115,8 @@ SPACE: ' ';
 // whitespace to start a line can be tabs or 4 spaces
 OPENTAB: '    ' | '\t';
 
+// we do not care about comments for our ASTs, so skip these
+COMMENT: '#' ~('\r' | '\n')* -> skip;
 
 STRING:
 	'\'' ('\\\'' | '\\' | ~('\'' | '\\' | '\n' | '\r'))*? '\''
@@ -101,6 +142,11 @@ COMMA: ',';
 IF: 'if';
 ELIF: 'elif';
 ELSE: 'else';
+WHILE: 'while';
+FOR: 'for';
+IN: 'in';
+BREAK: 'break';
+CONTINUE: 'continue';
 COLON: ':';
 
 // this has to be under other identifiers so they can take effect 
