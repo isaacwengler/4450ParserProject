@@ -26,11 +26,11 @@ tokens { INDENT, UNINDENT }
 startRule: block EOF;
 
 block
-: (if_statement | assignment | for_loop | while_loop | comment_line)+
+: (if_statement | assignment | for_loop | while_loop | comment_line | create_function | call_function)+
 ;
 
 blockInLoop
-: (if_statement_in_loop | assignment | for_loop | while_loop | break_statment | continue_statement | comment_line)+
+: (if_statement_in_loop | assignment | for_loop | while_loop | break_statment | continue_statement | comment_line | call_function)+
 ;
 
 comment_line: COMMENT NEWLINE;
@@ -152,7 +152,7 @@ DEF: 'def';
 
 //function implementation
 create_function
- : DEF SPACE+ '(' arguments? ')' ( COLON SPACE* COMMENT? indentedBlock)?
+ : DEF SPACE+ VAR '(' arguments? ')' ( COLON SPACE* COMMENT? NEWLINE indentedBlock)? 
  ;
 
 // call function

@@ -39,3 +39,9 @@ for var in [1, 2, 3, 4, 5, 6]: # comment here is weird
             continue
         else:
             var -= 1
+
+def my_func(var):
+    var = var+ " worked"
+    print(var)
+    
+my_func("testing")
