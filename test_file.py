@@ -9,7 +9,7 @@ if my_var > 100:
 # this comment is weird but should not mess up indents          
     complex = 29383 / 12 + (122 - 34)    
 
-    # more ocmment
+    # more comment
     if 1 == my_new_var and 5 - 10 > my_var or (complex or is_good): # comment here
         my_new_var = my_other_var
     elif is_good:
