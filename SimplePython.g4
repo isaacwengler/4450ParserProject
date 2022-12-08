@@ -148,8 +148,15 @@ IN: 'in';
 BREAK: 'break';
 CONTINUE: 'continue';
 COLON: ':';
+DEF: 'def';
 
-function: VAR '(' arguments? ')';
+//function implementation
+create_function
+ : DEF SPACE+ '(' arguments? ')' ( COLON SPACE* COMMENT? indentedBlock)?
+ ;
+
+// call function
+call_function: VAR '(' arguments? ')';
 arguments: expression ( ',' expression )*;
 
 
