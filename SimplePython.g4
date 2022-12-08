@@ -149,6 +149,10 @@ BREAK: 'break';
 CONTINUE: 'continue';
 COLON: ':';
 
+function: VAR '(' arguments? ')';
+arguments: expression ( ',' expression )*;
+
+
 // this has to be under other identifiers so they can take effect 
 // Variable starts with letter or underscore with n letters, numbers, and underscores after
 VAR: [A-Za-z_] [A-Za-z0-9_]*;
