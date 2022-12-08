@@ -1,5 +1,11 @@
 grammar SimplePython;
 
+// The following code for INDENT and UNINDENT tokens
+// was made with assistance from the README of
+// of Antlr Denter Helper,
+// an open source project to help handle indentation
+// Link: https://github.com/yshavit/antlr-denter
+
 tokens { INDENT, UNINDENT }
 
 @lexer::header {
@@ -23,17 +29,65 @@ tokens { INDENT, UNINDENT }
   }
 }
 
+// end of code made with assistance from antlr denter helper
+
 startRule: block EOF;
 
 block
-: (if_statement | assignment | for_loop | while_loop | comment_line | create_function | call_function)+
+: 
+  (create_function 
+    | statement 
+    | if_statement 
+    | for_loop 
+    | while_loop)+
 ;
 
 blockInLoop
-: (if_statement_in_loop | assignment | for_loop | while_loop | break_statment | continue_statement | comment_line | call_function)+
+: 
+    (statement
+      | if_statement_in_loop
+      | for_loop 
+      | while_loop 
+      | statement_in_loop)+
+;
+
+blockInFunction
+: 
+  (create_function 
+    | statement
+    | return_statment
+    | if_statement_in_function
+    | for_loop_in_function 
+    | while_loop_in_function)+
+;
+
+blockInFunctionAndLoop
+: 
+  (statement
+    | return_statment
+    | if_statement_in_function_and_loop
+    | for_loop_in_function 
+    | while_loop_in_function 
+    | statement_in_loop)+
+;
+
+statement:
+  call_function_statment
+  | assignment
+  | comment_line
+;
+
+statement_in_loop:
+  break_statment
+  | continue_statement
 ;
 
 comment_line: COMMENT NEWLINE;
+
+// different blocks are required, because when a statement makes a new scope, it
+// can use different statments.
+// Like only inside a function there can be a return, and a loop can be a break.
+// This is necessary so, for example, an if statment inside a function can return.
 
 indentedBlock
  : INDENT block UNINDENT
@@ -43,14 +97,25 @@ indentedBlockInLoop
  : INDENT blockInLoop UNINDENT
 ;
 
-assignment: VAR SPACE* ASSIGNMENT_OP SPACE* expression SPACE* COMMENT? NEWLINE;
+indentedBlockInFunction
+ : INDENT blockInFunction UNINDENT
+;
+
+indentedBlockInFunctionAndLoop
+ : INDENT blockInFunctionAndLoop UNINDENT
+;
+
+assignment: (VAR | list_index) SPACE* ASSIGNMENT_OP SPACE* expression SPACE* COMMENT? NEWLINE;
 
 expression
 :
 	expression SPACE* ARITHMETIC_OP SPACE* expression
 	| expression SPACE+ LOGIC_OP SPACE+ expression
+  | call_function
+  | call_function_on_object
 	| primitive
 	| VAR
+  | list_index
 	| list
 	| tuple
 	| OPAR SPACE* expression SPACE* CPAR
@@ -66,9 +131,30 @@ tuple
 : '(' (SPACE* expression SPACE* COMMA)* (SPACE* expression SPACE*)? ')'
 ;
 
-// TODO: add function (because return value)
+list_index
+: VAR ('[' expression ']')+
+;
+
 iterable
-: list | tuple | STRING | VAR
+: list | tuple | call_function | STRING | VAR
+;
+
+//function implementation
+create_function
+ : DEF SPACE+ VAR SPACE* '(' SPACE* parameters? SPACE* ')' SPACE* COLON SPACE* COMMENT? indentedBlockInFunction
+ ;
+parameters: VAR ( SPACE* ',' SPACE* VAR )*;
+
+// for when a function call is on its own line
+call_function_statment: (call_function | call_function_on_object) SPACE* COMMENT? NEWLINE;
+// call function
+call_function: VAR '(' SPACE* arguments? SPACE* ')';
+arguments: expression ( SPACE* ',' SPACE* expression )*;
+
+return_statment: RETURN SPACE+ expression SPACE* COMMENT? NEWLINE;
+
+call_function_on_object:
+  (STRING | VAR | list | tuple) '.' call_function
 ;
 
 if_statement
@@ -79,12 +165,28 @@ if_statement_in_loop
  : IF SPACE+ condition_block_in_loop (ELIF SPACE+ condition_block_in_loop)* ( ELSE SPACE* COLON SPACE* COMMENT? indentedBlockInLoop)?
  ;
 
+if_statement_in_function
+ : IF SPACE+ condition_block_in_function (ELIF SPACE+ condition_block_in_function)* ( ELSE SPACE* COLON SPACE* COMMENT? indentedBlockInFunction)?
+ ;
+
+if_statement_in_function_and_loop
+ : IF SPACE+ condition_block_in_function_and_loop (ELIF SPACE+ condition_block_in_function_and_loop)* ( ELSE SPACE* COLON SPACE* COMMENT? indentedBlockInFunctionAndLoop)?
+ ;
+
 while_loop
  : WHILE SPACE+ condition_block_in_loop
  ;
 
+while_loop_in_function
+ : WHILE SPACE+ condition_block_in_function_and_loop
+ ;
+
 for_loop
  : FOR SPACE+ VAR SPACE+ IN SPACE+ iterable SPACE* COLON SPACE* COMMENT? indentedBlockInLoop
+ ;
+
+for_loop_in_function
+ : FOR SPACE+ VAR SPACE+ IN SPACE+ iterable SPACE* COLON SPACE* COMMENT? indentedBlockInFunctionAndLoop
  ;
 
 condition_block
@@ -93,6 +195,14 @@ condition_block
 
 condition_block_in_loop
  : expression SPACE* COLON SPACE* COMMENT? indentedBlockInLoop 
+ ;
+
+condition_block_in_function
+ : expression SPACE* COLON SPACE* COMMENT? indentedBlockInFunction 
+ ;
+
+condition_block_in_function_and_loop
+ : expression SPACE* COLON SPACE* COMMENT? indentedBlockInFunctionAndLoop 
  ;
 
 break_statment
@@ -124,7 +234,7 @@ STRING:
 
 BOOL: 'True' | 'False';
 NUMBER: INT | FLOAT;
-INT: '0' | [1-9][0-9]*;
+INT: '0' | '-'? [1-9][0-9]*;
 FLOAT: INT '.' [0-9]+;
 NONE: 'None';
 
@@ -149,16 +259,7 @@ BREAK: 'break';
 CONTINUE: 'continue';
 COLON: ':';
 DEF: 'def';
-
-//function implementation
-create_function
- : DEF SPACE+ VAR '(' arguments? ')' ( COLON SPACE* COMMENT? NEWLINE indentedBlock)? 
- ;
-
-// call function
-call_function: VAR '(' arguments? ')';
-arguments: expression ( ',' expression )*;
-
+RETURN: 'return';
 
 // this has to be under other identifiers so they can take effect 
 // Variable starts with letter or underscore with n letters, numbers, and underscores after
