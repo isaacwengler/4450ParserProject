@@ -71,8 +71,8 @@ my_tuple = (my_array, [1, 2, 5, 3, 5 ** 2, "hello", "hello " + "world"], 15)
 my_array.sort()
 my_array = bubble_sort(my_array)
 
-# uncomment this to see an error
-# because you cannot "return" outside a function
-for num in my_array:
-    if num > 5:
-        return num
+# # uncomment this to see an error
+# # because you cannot "return" outside a function
+# for num in my_array:
+#     if num > 5:
+#         return num
