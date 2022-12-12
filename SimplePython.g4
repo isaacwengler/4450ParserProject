@@ -134,7 +134,7 @@ call_function: VAR '(' SPACE* arguments? SPACE* ')';
 arguments: expression ( SPACE* ',' SPACE* expression)*;
 
 return_statment:
-	RETURN SPACE+ expression SPACE* COMMENT? NEWLINE;
+	RETURN (SPACE+ expression)? SPACE* COMMENT? NEWLINE;
 
 call_function_on_object:
 	(STRING | VAR | list | tuple) '.' call_function;
