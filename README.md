@@ -48,3 +48,9 @@ $ grun SimplePython startRule -gui test_file.py
 Alternatively, replace `test_file.py` with another file to parse it, or omit `test_file.py` to input on stdin, and enter `control + D` to end the input.
 
 Switch `-gui` to `-tree` to have command line output, instead of gui output.
+
+## Demo Video
+
+This video shows our parser correctly parsing a Python file, and then correctly erroring when parsing a file that has a syntax error. 
+
+https://youtu.be/axTpoLPe8ow
